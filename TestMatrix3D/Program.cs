@@ -21,38 +21,36 @@ namespace TestMatrix3D
         static void Main(string[] args)
         {
             Random random = new Random();
-            Console.WriteLine(random.NextDouble());
-            Console.WriteLine(random.NextDoubleInRange(-180, 180));
+            Vector3D eulerInput;
+            Matrix3D matrix4x4;
+            Vector3D eulerXYZ_1;
+            Vector3D eulerXYZ_2;
 
-            // Euler to Matrix4x4
-            Vector3D eulerInput = new Vector3D(Math.PI, 30.515, 151.515);
-            Matrix3D matrix4x4 = ConvertEulerXYZtoMatrix3D(eulerInput);
+            double numberOfTests = 1e6;
+            Console.WriteLine("Running " + numberOfTests + " matrix4x4 to euler angle conversion tests.");
 
-            // Convert matrix to Euler angles
-            Vector3D eulerXYZ_1 = new Vector3D();
-            Vector3D eulerXYZ_2 = new Vector3D();
-            ConvertMatrix3DtoEulerXYZ(matrix4x4, ref eulerXYZ_1, ref eulerXYZ_2);
-
-            // Display results
-            Console.WriteLine("\nEuler inputs:");
-            Console.WriteLine(eulerInput.ToString("\t"));
-            Console.WriteLine("\nEuler XYZ solution 1:");
-            Console.WriteLine(eulerXYZ_1.ToString("\t"));
-            Console.WriteLine("\nEuler XYZ solution 2:");
-            Console.WriteLine(eulerXYZ_2.ToString("\t"));
-
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < numberOfTests; i++)
             {
                 eulerInput = random.NextEulerXYZ();
-                Console.WriteLine(eulerInput);
                 if (ConversionSuccesful(eulerInput) == false)
                 {
-                    Console.WriteLine("!!! Conversion failed: eulerInput: ");
+                    Console.WriteLine("\n!!! Conversion failed: eulerInput: ");
+
+                    matrix4x4 = ConvertEulerXYZtoMatrix3D(eulerInput);
+                    eulerXYZ_1 = new Vector3D(); 
+                    eulerXYZ_2 = new Vector3D();
+                    ConvertMatrix3DtoEulerXYZ(matrix4x4, ref eulerXYZ_1, ref eulerXYZ_2);
+
+                    Console.WriteLine("\nEuler inputs:");
                     Console.WriteLine(eulerInput.ToString("\t"));
+                    Console.WriteLine("\nEuler XYZ solution 1:");
+                    Console.WriteLine(eulerXYZ_1.ToString("\t"));
+                    Console.WriteLine("\nEuler XYZ solution 2:");
+                    Console.WriteLine(eulerXYZ_2.ToString("\t"));
                 }
             }
 
-            Console.WriteLine(ConversionSuccesful(eulerInput));
+            Console.WriteLine("All conversions succesful");
 
             Console.ReadLine();
         }
@@ -131,11 +129,31 @@ namespace TestMatrix3D
             }
 
             // Convert from radians to degrees
-            eulerXYZ_1 = eulerXYZ_1 / Math.PI * 180;
-            eulerXYZ_2 = eulerXYZ_2 / Math.PI * 180;
+            eulerXYZ_1 = EulerToDegreesAndRange(eulerXYZ_1);
+            eulerXYZ_2 = EulerToDegreesAndRange(eulerXYZ_2);
 
         }
-                
+
+        /// <summary>
+        /// Converts Euler angles from radians to degrees and converts all angles to within range: -180 to 180 degrees.
+        /// </summary>
+        /// <param name="eulerAngles"></param>
+        /// <returns></returns>
+        static Vector3D EulerToDegreesAndRange(Vector3D eulerAngles)
+        {
+            eulerAngles = eulerAngles / Math.PI * 180; // Radians to degrees
+            eulerAngles.X = LimitRangeOfAngles(eulerAngles.X);
+            eulerAngles.Y = LimitRangeOfAngles(eulerAngles.Y);
+            eulerAngles.Z = LimitRangeOfAngles(eulerAngles.Z);
+            return eulerAngles;
+        }
+
+        static double LimitRangeOfAngles(double angle)
+        {
+            angle = ((angle % 360) + 360 + 180) % 360 - 180;
+            return angle;
+        }
+
         static bool EqualWithinTolerance(double value1, double value2, double tolerance)
         {
             return Math.Abs(value1 - value2) < tolerance;
