@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using HelixToolkit.Wpf;
 using CustomExtensions;
+using System.Diagnostics;
 
 namespace TestMatrix3D
 {
@@ -29,6 +30,7 @@ namespace TestMatrix3D
             double numberOfTests = 1e6;
             Console.WriteLine("Running " + numberOfTests + " matrix4x4 to euler angle conversion tests.");
 
+            Stopwatch sw = Stopwatch.StartNew();
             for (int i = 0; i < numberOfTests; i++)
             {
                 eulerInput = random.NextEulerXYZ();
@@ -51,7 +53,7 @@ namespace TestMatrix3D
             }
 
             Console.WriteLine("All conversions succesful");
-
+            Console.WriteLine("Elapsed time: " + sw.ElapsedMilliseconds + "ms");
             Console.ReadLine();
         }
 
