@@ -20,6 +20,9 @@ namespace TestMatrix3D
     {
         static void Main(string[] args)
         {
+            Random random = new Random();
+            Console.WriteLine(random.NextDouble());
+            Console.WriteLine(random.NextDoubleInRange(-180, 180));
 
             // Euler to Matrix4x4
             Vector3D eulerInput = new Vector3D(Math.PI, 30.515, 151.515);
@@ -37,6 +40,17 @@ namespace TestMatrix3D
             Console.WriteLine(eulerXYZ_1.ToString("\t"));
             Console.WriteLine("\nEuler XYZ solution 2:");
             Console.WriteLine(eulerXYZ_2.ToString("\t"));
+
+            for (int i = 0; i < 10; i++)
+            {
+                eulerInput = random.NextEulerXYZ();
+                Console.WriteLine(eulerInput);
+                if (ConversionSuccesful(eulerInput) == false)
+                {
+                    Console.WriteLine("!!! Conversion failed: eulerInput: ");
+                    Console.WriteLine(eulerInput.ToString("\t"));
+                }
+            }
 
             Console.WriteLine(ConversionSuccesful(eulerInput));
 
